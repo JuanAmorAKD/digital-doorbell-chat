@@ -2,10 +2,12 @@
 import React, { useState } from 'react';
 import { Bell } from 'lucide-react';
 import { useDoorbellContext } from '@/contexts/DoorbellContext';
+import { useToast } from '@/hooks/use-toast';
 
 const DoorbellButton: React.FC = () => {
   const { ringDoorbell } = useDoorbellContext();
   const [isPressed, setIsPressed] = useState(false);
+  const { toast } = useToast();
   
   const handleRing = () => {
     setIsPressed(true);
@@ -14,6 +16,13 @@ const DoorbellButton: React.FC = () => {
     setTimeout(() => {
       setIsPressed(false);
       ringDoorbell();
+      
+      // Show toast with information about Discord integration
+      toast({
+        title: "Doorbell rung!",
+        description: "For full Discord integration, messages need to be handled by a server that can receive Discord webhook responses.",
+        duration: 5000,
+      });
     }, 500);
   };
   

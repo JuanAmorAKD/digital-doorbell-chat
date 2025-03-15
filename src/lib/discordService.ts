@@ -48,17 +48,19 @@ export const useDiscordWebhook = () => {
 // This is a simplified simulation of receiving messages from Discord
 export const useDiscordListener = () => {
   const { visitorInfo, receiveMessage } = useDoorbellContext();
+  const [hasResponded, setHasResponded] = useState(false);
   
   // This is a simulation - in a real app, we'd use WebSockets or a server to handle this
-  // For demo purposes, we'll simulate an owner response after a short delay
+  // For demo purposes, we'll simulate an owner response after a short delay but only once
   useEffect(() => {
-    if (!visitorInfo) return;
+    if (!visitorInfo || hasResponded) return;
     
-    // Simulate an automatic response from the owner
+    // Simulate an automatic response from the owner - only once
     const timeoutId = setTimeout(() => {
       receiveMessage(`Hello ${visitorInfo.name}, I received your message. How can I help you today?`);
+      setHasResponded(true);
     }, 5000);
     
     return () => clearTimeout(timeoutId);
-  }, [visitorInfo, receiveMessage]);
+  }, [visitorInfo, receiveMessage, hasResponded]);
 };
