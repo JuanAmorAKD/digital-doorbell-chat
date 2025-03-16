@@ -1,5 +1,7 @@
+
 import { useEffect, useState } from 'react';
 import { useDoorbellContext } from '@/contexts/DoorbellContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useDiscordWebhook = () => {
   const { webhookUrl, setWebhookUrl } = useDoorbellContext();
@@ -45,13 +47,41 @@ export const useDiscordWebhook = () => {
 
 // This is a simplified simulation of receiving messages from Discord
 export const useDiscordListener = () => {
-  const { visitorInfo, receiveMessage } = useDoorbellContext();
+  const { visitorInfo, receiveMessage, activeNotificationId } = useDoorbellContext();
   const [hasResponded, setHasResponded] = useState(false);
+  
+  // Listen for new real-time messages from the database
+  useEffect(() => {
+    if (!activeNotificationId) return;
+    
+    // Subscribe to real-time messages
+    const messagesChannel = supabase
+      .channel('realtime-messages')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `notification_id=eq.${activeNotificationId} AND sender=eq.owner`
+        },
+        (payload) => {
+          if (payload.new) {
+            receiveMessage(payload.new.content);
+          }
+        }
+      )
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(messagesChannel);
+    };
+  }, [activeNotificationId, receiveMessage]);
   
   // This is a simulation - in a real app, we'd use WebSockets or a server to handle this
   // For demo purposes, we'll simulate an owner response after a short delay but only once
   useEffect(() => {
-    if (!visitorInfo || hasResponded) return;
+    if (!visitorInfo || hasResponded || activeNotificationId) return;
     
     // Simulate an automatic response from the owner - only once
     const timeoutId = setTimeout(() => {
@@ -60,7 +90,7 @@ export const useDiscordListener = () => {
     }, 5000);
     
     return () => clearTimeout(timeoutId);
-  }, [visitorInfo, receiveMessage, hasResponded]);
+  }, [visitorInfo, receiveMessage, hasResponded, activeNotificationId]);
 };
 
 // Function to create and format the Discord notification

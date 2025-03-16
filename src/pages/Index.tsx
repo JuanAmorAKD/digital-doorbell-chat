@@ -8,17 +8,18 @@ import ChatInterface from '@/components/ChatInterface';
 import AdminLogin from '@/components/AdminLogin';
 import AdminPanel from '@/components/AdminPanel';
 import { useDiscordListener } from '@/lib/discordService';
-import { BellRing, Settings } from 'lucide-react';
+import { BellRing, Settings, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Link } from 'react-router-dom';
 
 const DoorbellApp: React.FC = () => {
   const { status } = useDoorbellContext();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const [isAdminView, setIsAdminView] = useState(false);
   
   // This simulates receiving messages from Discord
@@ -56,34 +57,45 @@ const DoorbellApp: React.FC = () => {
           </h1>
         </div>
         
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full" title="Settings">
-              <Settings size={20} />
-            </Button>
-          </SheetTrigger>
-          <SheetContent>
-            <div className="py-6">
-              <h2 className="text-xl font-semibold mb-6">Doorbell Settings</h2>
-              <div className="space-y-4">
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start" 
-                  onClick={() => setIsAdminView(false)}
-                >
-                  Use Doorbell
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start" 
-                  onClick={() => setIsAdminView(true)}
-                >
-                  Admin Panel
-                </Button>
+        <div className="flex items-center space-x-2">
+          {!isAuthenticated && !isLoading && (
+            <Link to="/auth">
+              <Button variant="outline" size="sm" className="mr-2">
+                <LogIn size={16} className="mr-1" />
+                Login
+              </Button>
+            </Link>
+          )}
+          
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full" title="Settings">
+                <Settings size={20} />
+              </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <div className="py-6">
+                <h2 className="text-xl font-semibold mb-6">Doorbell Settings</h2>
+                <div className="space-y-4">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start" 
+                    onClick={() => setIsAdminView(false)}
+                  >
+                    Use Doorbell
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start" 
+                    onClick={() => setIsAdminView(true)}
+                  >
+                    Admin Panel
+                  </Button>
+                </div>
               </div>
-            </div>
-          </SheetContent>
-        </Sheet>
+            </SheetContent>
+          </Sheet>
+        </div>
       </header>
       
       {/* Main Content */}
