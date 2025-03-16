@@ -12,8 +12,6 @@ import {
   Building, 
   Home, 
   Plus, 
-  Trash, 
-  Bell,
   RefreshCw
 } from 'lucide-react';
 import { 
@@ -220,7 +218,12 @@ const AdminPanel: React.FC = () => {
         .select()
         .single();
       
-      if (buildingError) throw buildingError;
+      if (buildingError) {
+        console.error('Building creation error:', buildingError);
+        throw buildingError;
+      }
+      
+      console.log('Created building:', building);
       
       // Create default apartment
       const { data: apartment, error: apartmentError } = await supabase
@@ -233,18 +236,35 @@ const AdminPanel: React.FC = () => {
         .select()
         .single();
       
-      if (apartmentError) throw apartmentError;
+      if (apartmentError) {
+        console.error('Apartment creation error:', apartmentError);
+        throw apartmentError;
+      }
+      
+      console.log('Created apartment:', apartment);
+      
+      if (!user?.id) {
+        console.error('No user ID found, cannot create doorbell');
+        throw new Error('No user ID found');
+      }
       
       // Create doorbell for the user
-      const { error: doorbellError } = await supabase
+      const { data: doorbell, error: doorbellError } = await supabase
         .from('doorbells')
         .insert({
-          user_id: user?.id,
+          user_id: user.id,
           apartment_id: apartment.id,
           webhook_url: null
-        });
+        })
+        .select()
+        .single();
       
-      if (doorbellError) throw doorbellError;
+      if (doorbellError) {
+        console.error('Doorbell creation error:', doorbellError);
+        throw doorbellError;
+      }
+      
+      console.log('Created doorbell:', doorbell);
       
       toast({
         title: "Setup Complete",

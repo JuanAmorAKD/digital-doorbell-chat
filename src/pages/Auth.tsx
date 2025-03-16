@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -20,30 +19,36 @@ const Auth = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
+      console.log("User is authenticated, redirecting to home");
       navigate('/');
     }
   }, [isAuthenticated, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Login attempt with:", email);
     setIsSubmitting(true);
     
     try {
       const { error } = await login(email, password);
       
       if (error) {
+        console.error("Login error:", error);
         toast({
           title: "Login Failed",
           description: error,
           variant: "destructive",
         });
       } else {
+        console.log("Login successful");
         toast({
           title: "Welcome back!",
           description: "You've successfully logged in.",
         });
         navigate('/');
       }
+    } catch (err) {
+      console.error("Unexpected login error:", err);
     } finally {
       setIsSubmitting(false);
     }
@@ -51,23 +56,28 @@ const Auth = () => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Signup attempt with:", email);
     setIsSubmitting(true);
     
     try {
       const { error } = await signup(email, password);
       
       if (error) {
+        console.error("Signup error:", error);
         toast({
           title: "Signup Failed",
           description: error,
           variant: "destructive",
         });
       } else {
+        console.log("Signup successful");
         toast({
           title: "Account created!",
           description: "Please check your email to confirm your account.",
         });
       }
+    } catch (err) {
+      console.error("Unexpected signup error:", err);
     } finally {
       setIsSubmitting(false);
     }
