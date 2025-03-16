@@ -32,7 +32,7 @@ const ChatInterface: React.FC = () => {
       const secondsPassed = Math.floor((Date.now() - lastActivity.getTime()) / 1000);
       const secondsLeft = Math.max(0, 20 - secondsPassed);
       setTimeLeft(secondsLeft);
-    }, 1000);
+    }, 5000);
     
     return () => clearInterval(intervalId);
   }, [lastActivity]);
