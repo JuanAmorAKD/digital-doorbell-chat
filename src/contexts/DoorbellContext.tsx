@@ -1,5 +1,5 @@
-
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import { formatDiscordNotification } from '@/lib/discordService';
 
 export type Message = {
   id: string;
@@ -40,17 +40,15 @@ export const DoorbellProvider: React.FC<{ children: ReactNode }> = ({ children }
     return localStorage.getItem('discordWebhookUrl') || '';
   });
 
-  // Save webhook URL to localStorage when it changes
   useEffect(() => {
     localStorage.setItem('discordWebhookUrl', webhookUrl);
   }, [webhookUrl]);
 
-  // Auto-reset after 20 seconds of inactivity
   useEffect(() => {
     if (status === 'chatting' && lastActivity) {
       const timeoutId = setTimeout(() => {
         resetDoorbell();
-      }, 20000); // 20 seconds
+      }, 20000);
 
       return () => clearTimeout(timeoutId);
     }
@@ -66,7 +64,6 @@ export const DoorbellProvider: React.FC<{ children: ReactNode }> = ({ children }
     setStatus('chatting');
     setLastActivity(new Date());
     
-    // Add initial message from visitor
     const initialMessage: Message = {
       id: Date.now().toString(),
       sender: 'visitor',
@@ -76,7 +73,6 @@ export const DoorbellProvider: React.FC<{ children: ReactNode }> = ({ children }
     
     setMessages([initialMessage]);
     
-    // Send notification to Discord
     sendDiscordNotification(info);
   };
 
@@ -89,20 +85,7 @@ export const DoorbellProvider: React.FC<{ children: ReactNode }> = ({ children }
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          username: 'Digital Doorbell',
-          content: `🔔 **${info.name}** is at the door!`,
-          embeds: [
-            {
-              title: 'Visitor Information',
-              description: info.message || 'No message provided.',
-              color: 3447003, // Blue color
-              footer: {
-                text: 'Respond to this message to chat with the visitor'
-              }
-            }
-          ]
-        })
+        body: JSON.stringify(formatDiscordNotification(info))
       });
     } catch (error) {
       console.error('Failed to send Discord notification:', error);
@@ -122,7 +105,6 @@ export const DoorbellProvider: React.FC<{ children: ReactNode }> = ({ children }
     setMessages(prev => [...prev, newMessage]);
     setLastActivity(new Date());
     
-    // Send message to Discord
     if (webhookUrl) {
       try {
         await fetch(webhookUrl, {

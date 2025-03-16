@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useDoorbellContext, Message } from '@/contexts/DoorbellContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, Clock, ArrowLeft } from 'lucide-react';
+import { Send, Clock, ArrowLeft, X } from 'lucide-react';
 import { format } from 'date-fns';
 
 const ChatInterface: React.FC = () => {
@@ -62,9 +62,21 @@ const ChatInterface: React.FC = () => {
           </h2>
         </div>
         
-        <div className="flex items-center text-sm text-muted-foreground">
-          <Clock size={16} className="mr-1" />
-          <span>Session expires in {timeLeft}s</span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center text-sm text-muted-foreground">
+            <Clock size={16} className="mr-1" />
+            <span>Session expires in {timeLeft}s</span>
+          </div>
+          
+          <Button 
+            variant="destructive" 
+            size="sm" 
+            onClick={resetDoorbell}
+            className="flex items-center gap-1"
+          >
+            <X size={16} />
+            <span>End Chat</span>
+          </Button>
         </div>
       </div>
       

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useDoorbellContext } from '@/contexts/DoorbellContext';
 
@@ -44,7 +43,6 @@ export const useDiscordWebhook = () => {
   };
 };
 
-// In a real application, we would set up a server to listen for Discord interactions
 // This is a simplified simulation of receiving messages from Discord
 export const useDiscordListener = () => {
   const { visitorInfo, receiveMessage } = useDoorbellContext();
@@ -63,4 +61,32 @@ export const useDiscordListener = () => {
     
     return () => clearTimeout(timeoutId);
   }, [visitorInfo, receiveMessage, hasResponded]);
+};
+
+// Function to create and format the Discord notification
+export const formatDiscordNotification = (info: { name: string; message: string }) => {
+  // In a real implementation, this would include the actual URL to your app
+  const chatUrl = window.location.href;
+  
+  return {
+    username: 'Digital Doorbell',
+    content: `🔔 **${info.name}** is at the door!`,
+    embeds: [
+      {
+        title: 'Visitor Information',
+        description: info.message || 'No message provided.',
+        color: 3447003, // Blue color
+        fields: [
+          {
+            name: '🔗 Chat Link',
+            value: `[Click here to chat with ${info.name}](${chatUrl})`,
+            inline: true
+          }
+        ],
+        footer: {
+          text: 'Reply to this message or use the chat link to talk with the visitor'
+        }
+      }
+    ]
+  };
 };
