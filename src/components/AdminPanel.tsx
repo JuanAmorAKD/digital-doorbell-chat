@@ -168,17 +168,19 @@ const AdminPanel: React.FC = () => {
       
       if (error) throw error;
       
+      setWebhookUrl(webhookUrl);
+      
       toast({
-        title: "Settings saved",
-        description: "Your Discord webhook has been updated successfully.",
+        title: "Configuración guardada",
+        description: "El webhook de Discord ha sido actualizado exitosamente.",
       });
       
       fetchData();
     } catch (error: any) {
-      console.error('Error saving webhook:', error);
+      console.error('Error al guardar webhook:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to save settings",
+        description: error.message || "Error al guardar la configuración",
         variant: "destructive",
       });
     } finally {
@@ -346,7 +348,7 @@ const AdminPanel: React.FC = () => {
               <div className="glass-card rounded-xl p-6">
                 <h3 className="text-lg font-medium mb-4 flex items-center">
                   <Link size={18} className="mr-2 text-blue-500" />
-                  Discord Webhook Configuration
+                  Configuración del Webhook de Discord
                 </h3>
                 
                 {doorbells.length === 0 ? (
@@ -383,16 +385,17 @@ const AdminPanel: React.FC = () => {
                     
                     <form onSubmit={handleWebhookSubmit} className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="webhook">Discord Webhook URL</Label>
+                        <Label htmlFor="webhook">URL del Webhook de Discord</Label>
                         <Input
                           id="webhook"
                           value={webhookUrl}
                           onChange={(e) => setWebhookUrl(e.target.value)}
+                          type="password"
                           placeholder="https://discord.com/api/webhooks/..."
                         />
                         <p className="text-xs text-muted-foreground">
-                          Paste your Discord webhook URL to receive doorbell notifications.
-                          The webhook will be used to send messages when someone rings your doorbell.
+                          Ingresa tu webhook de Discord para recibir notificaciones.
+                          El webhook será almacenado de manera segura.
                         </p>
                       </div>
                       
@@ -402,7 +405,7 @@ const AdminPanel: React.FC = () => {
                         className="flex items-center"
                       >
                         <Save size={16} className="mr-2" />
-                        {isSaving ? 'Saving...' : 'Save Settings'}
+                        {isSaving ? 'Guardando...' : 'Guardar Configuración'}
                       </Button>
                     </form>
                   </>
