@@ -1,13 +1,13 @@
 
 import React, { useState } from 'react';
-import { QrCode, Bell, Plus, Toggle } from 'lucide-react';
+import { QrCode, Bell, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import QRCode from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface Doorbell {
   id: string;
@@ -174,7 +174,7 @@ const DoorbellManager: React.FC<DoorbellManagerProps> = ({ doorbells, onUpdate }
 
             {showQR === doorbell.id && (
               <div className="mt-4 p-4 bg-white rounded-lg flex flex-col items-center gap-4">
-                <QRCode value={getDoorbellUrl(doorbell.id)} size={200} />
+                <QRCodeSVG value={getDoorbellUrl(doorbell.id)} size={200} />
                 <p className="text-sm text-center text-muted-foreground break-all">
                   {getDoorbellUrl(doorbell.id)}
                 </p>

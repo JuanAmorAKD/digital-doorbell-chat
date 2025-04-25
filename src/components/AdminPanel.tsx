@@ -1,10 +1,22 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { LogOut, Building, Plus, RefreshCw, Bell } from 'lucide-react';
+import { LogOut, Building, Plus, RefreshCw, Bell, Home, Save, Link } from 'lucide-react';
 import DoorbellManager from './DoorbellManager';
 import { supabase } from '@/integrations/supabase/client';
+import { 
+  Table, 
+  TableHeader, 
+  TableRow, 
+  TableHead, 
+  TableBody, 
+  TableCell 
+} from '@/components/ui/table';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 interface Building {
   id: string;
@@ -25,6 +37,8 @@ interface Doorbell {
   apartment_id: string | null;
   webhook_url: string | null;
   enabled: boolean;
+  name: string;
+  qr_code_enabled: boolean;
 }
 
 interface ApartmentWithBuilding extends Apartment {
@@ -223,7 +237,10 @@ const AdminPanel: React.FC = () => {
         .insert({
           user_id: user.id,
           apartment_id: apartment.id,
-          webhook_url: null
+          webhook_url: null,
+          name: 'Main Doorbell',
+          enabled: true,
+          qr_code_enabled: true
         })
         .select()
         .single();
