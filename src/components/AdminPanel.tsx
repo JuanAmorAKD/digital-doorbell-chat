@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -12,7 +11,8 @@ import {
   Building, 
   Home, 
   Plus, 
-  RefreshCw
+  RefreshCw,
+  Bell
 } from 'lucide-react';
 import { 
   Table, 
@@ -25,7 +25,6 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 
-// Types for our data
 interface Building {
   id: string;
   name: string;
@@ -64,11 +63,9 @@ const AdminPanel: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   
-  // Load data on component mount
   useEffect(() => {
     fetchData();
     
-    // Subscribe to real-time notifications
     const channel = supabase
       .channel('schema-db-changes')
       .on(
@@ -97,14 +94,12 @@ const AdminPanel: React.FC = () => {
     setIsLoading(true);
     
     try {
-      // Fetch buildings
       const { data: buildingsData, error: buildingsError } = await supabase
         .from('buildings')
         .select('*');
       
       if (buildingsError) throw buildingsError;
       
-      // Fetch apartments with building details
       const { data: apartmentsData, error: apartmentsError } = await supabase
         .from('apartments')
         .select(`
@@ -114,7 +109,6 @@ const AdminPanel: React.FC = () => {
       
       if (apartmentsError) throw apartmentsError;
       
-      // Fetch doorbells
       const { data: doorbellsData, error: doorbellsError } = await supabase
         .from('doorbells')
         .select('*')
@@ -122,7 +116,6 @@ const AdminPanel: React.FC = () => {
       
       if (doorbellsError) throw doorbellsError;
       
-      // Fetch recent notifications
       const { data: notificationsData, error: notificationsError } = await supabase
         .from('notifications')
         .select(`
@@ -134,7 +127,6 @@ const AdminPanel: React.FC = () => {
       
       if (notificationsError) throw notificationsError;
       
-      // Format apartments with building name
       const apartmentsWithBuilding = apartmentsData.map((apt: any) => ({
         ...apt,
         building_name: apt.buildings?.name || 'Unknown Building'
@@ -145,7 +137,6 @@ const AdminPanel: React.FC = () => {
       setDoorbells(doorbellsData);
       setNotifications(notificationsData);
       
-      // Select first doorbell if available and none selected
       if (doorbellsData.length > 0 && !selectedDoorbell) {
         setSelectedDoorbell(doorbellsData[0]);
         setWebhookUrl(doorbellsData[0].webhook_url || '');
@@ -182,7 +173,6 @@ const AdminPanel: React.FC = () => {
         description: "Your Discord webhook has been updated successfully.",
       });
       
-      // Refresh data
       fetchData();
     } catch (error: any) {
       console.error('Error saving webhook:', error);
@@ -201,14 +191,12 @@ const AdminPanel: React.FC = () => {
     setWebhookUrl(doorbell.webhook_url || '');
   };
   
-  // Initial setup - create a building and apartment if none exist
   const handleInitialSetup = async () => {
     if (buildings.length > 0) return;
     
     setIsSaving(true);
     
     try {
-      // Create default building
       const { data: building, error: buildingError } = await supabase
         .from('buildings')
         .insert({
@@ -225,7 +213,6 @@ const AdminPanel: React.FC = () => {
       
       console.log('Created building:', building);
       
-      // Create default apartment
       const { data: apartment, error: apartmentError } = await supabase
         .from('apartments')
         .insert({
@@ -248,7 +235,6 @@ const AdminPanel: React.FC = () => {
         throw new Error('No user ID found');
       }
       
-      // Create doorbell for the user
       const { data: doorbell, error: doorbellError } = await supabase
         .from('doorbells')
         .insert({
@@ -271,7 +257,6 @@ const AdminPanel: React.FC = () => {
         description: "Default building and doorbell created successfully.",
       });
       
-      // Refresh data
       fetchData();
     } catch (error: any) {
       console.error('Error in initial setup:', error);
@@ -326,7 +311,6 @@ const AdminPanel: React.FC = () => {
             </div>
           ) : (
             <>
-              {/* Recent notifications */}
               <div className="glass-card rounded-xl p-6">
                 <h3 className="text-lg font-medium mb-4 flex items-center">
                   <Bell size={18} className="mr-2 text-blue-500" />
@@ -359,7 +343,6 @@ const AdminPanel: React.FC = () => {
                 )}
               </div>
               
-              {/* Doorbells management */}
               <div className="glass-card rounded-xl p-6">
                 <h3 className="text-lg font-medium mb-4 flex items-center">
                   <Link size={18} className="mr-2 text-blue-500" />
@@ -380,7 +363,6 @@ const AdminPanel: React.FC = () => {
                         <Label>Select Doorbell</Label>
                         <div className="grid grid-cols-2 gap-2 mt-2">
                           {doorbells.map((doorbell) => {
-                            // Find apartment info
                             const apartment = apartments.find(a => a.id === doorbell.apartment_id);
                             
                             return (
@@ -427,7 +409,6 @@ const AdminPanel: React.FC = () => {
                 )}
               </div>
               
-              {/* Buildings & Apartments (Admin only) */}
               {user?.isAdmin && (
                 <div className="glass-card rounded-xl p-6">
                   <h3 className="text-lg font-medium mb-4 flex items-center">
