@@ -1,28 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  LogOut, 
-  Save, 
-  Link, 
-  Building, 
-  Home, 
-  Plus, 
-  RefreshCw,
-  Bell
-} from 'lucide-react';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { LogOut, Building, Plus, RefreshCw, Bell } from 'lucide-react';
+import DoorbellManager from './DoorbellManager';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Building {
@@ -276,21 +257,21 @@ const AdminPanel: React.FC = () => {
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold">Admin Panel</h2>
+          <h2 className="text-2xl font-semibold">Panel de Administración</h2>
           <p className="text-muted-foreground">
-            Welcome back, {user?.name}
+            Bienvenido, {user?.name}
           </p>
         </div>
         
         <div className="flex gap-2">
-          <Button variant="outline" onClick={fetchData} title="Refresh data">
+          <Button variant="outline" onClick={fetchData} title="Actualizar datos">
             <RefreshCw size={16} className="mr-2" />
-            Refresh
+            Actualizar
           </Button>
           
           <Button variant="outline" onClick={logout}>
             <LogOut size={16} className="mr-2" />
-            Sign Out
+            Cerrar Sesión
           </Button>
         </div>
       </div>
@@ -301,14 +282,26 @@ const AdminPanel: React.FC = () => {
         </div>
       ) : (
         <>
+          <div className="glass-card rounded-xl p-6">
+            <h3 className="text-lg font-medium mb-4 flex items-center">
+              <Bell size={18} className="mr-2 text-blue-500" />
+              Gestión de Timbres
+            </h3>
+            
+            <DoorbellManager 
+              doorbells={doorbells}
+              onUpdate={fetchData}
+            />
+          </div>
+          
           {buildings.length === 0 ? (
             <div className="glass-card rounded-xl p-6">
-              <h3 className="text-lg font-medium mb-4">Welcome to Digital Doorbell</h3>
-              <p className="mb-4">You don't have any buildings or doorbells set up yet. Let's create your first doorbell.</p>
+              <h3 className="text-lg font-medium mb-4">Bienvenido a Digital Doorbell</h3>
+              <p className="mb-4">No tienes ningún edificio o timbre configurado aún. Vamos a crear tu primer timbre.</p>
               
               <Button onClick={handleInitialSetup} disabled={isSaving}>
                 <Plus size={16} className="mr-2" />
-                {isSaving ? 'Setting up...' : 'Create My First Doorbell'}
+                {isSaving ? 'Configurando...' : 'Crear Mi Primer Timbre'}
               </Button>
             </div>
           ) : (
@@ -355,7 +348,7 @@ const AdminPanel: React.FC = () => {
                   <Alert>
                     <AlertTitle>No doorbells found</AlertTitle>
                     <AlertDescription>
-                      You don't have any doorbells set up yet. Please contact an administrator.
+                      No tienes ningún timbre configurado aún. Por favor, contacta a un administrador.
                     </AlertDescription>
                   </Alert>
                 ) : (
@@ -416,7 +409,7 @@ const AdminPanel: React.FC = () => {
                 <div className="glass-card rounded-xl p-6">
                   <h3 className="text-lg font-medium mb-4 flex items-center">
                     <Building size={18} className="mr-2 text-blue-500" />
-                    Buildings & Apartments
+                    Edificios & Apartamentos
                   </h3>
                   
                   {buildings.map((building) => {
@@ -433,7 +426,7 @@ const AdminPanel: React.FC = () => {
                         </h4>
                         
                         <div className="mt-2">
-                          <h5 className="text-sm text-muted-foreground mb-1">Apartments:</h5>
+                          <h5 className="text-sm text-muted-foreground mb-1">Apartamentos:</h5>
                           <ul className="space-y-1 ml-4">
                             {buildingApartments.length === 0 ? (
                               <li className="text-sm">No apartments found</li>
@@ -453,11 +446,11 @@ const AdminPanel: React.FC = () => {
                   })}
                   
                   <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-700 mt-4">
-                    <h5 className="font-medium mb-1">Coming Soon:</h5>
+                    <h5 className="font-medium mb-1">Próximamente:</h5>
                     <ul className="list-disc list-inside space-y-1 ml-2">
-                      <li>Add/edit buildings & apartments</li>
-                      <li>User role management</li>
-                      <li>Doorbell assignment</li>
+                      <li>Agregar/editar edificios & apartamentos</li>
+                      <li>Gestión de roles de usuario</li>
+                      <li>Asignación de timbres</li>
                     </ul>
                   </div>
                 </div>
@@ -468,12 +461,12 @@ const AdminPanel: React.FC = () => {
       )}
       
       <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-700">
-        <h4 className="font-medium mb-1">Coming Soon:</h4>
+        <h4 className="font-medium mb-1">Próximamente:</h4>
         <ul className="list-disc list-inside space-y-1 ml-2">
-          <li>Multi-user management</li>
-          <li>Multiple doorbells configuration</li>
-          <li>Building/apartment management</li>
-          <li>Custom notification settings</li>
+          <li>Gestión multi-usuarios</li>
+          <li>Configuración de múltiples timbres</li>
+          <li>Gestión de edificios/apartamentos</li>
+          <li>Configuración de ajustes de notificación personalizados</li>
         </ul>
       </div>
     </div>

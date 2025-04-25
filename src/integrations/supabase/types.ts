@@ -71,6 +71,8 @@ export type Database = {
           created_at: string
           enabled: boolean
           id: string
+          name: string
+          qr_code_enabled: boolean
           user_id: string
           webhook_url: string | null
         }
@@ -79,6 +81,8 @@ export type Database = {
           created_at?: string
           enabled?: boolean
           id?: string
+          name: string
+          qr_code_enabled?: boolean
           user_id: string
           webhook_url?: string | null
         }
@@ -87,6 +91,8 @@ export type Database = {
           created_at?: string
           enabled?: boolean
           id?: string
+          name?: string
+          qr_code_enabled?: boolean
           user_id?: string
           webhook_url?: string | null
         }
